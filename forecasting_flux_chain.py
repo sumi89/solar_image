@@ -100,21 +100,22 @@ model.add(Dense(1))
 
 model.compile(optimizer=RMSprop(lr = 0.0001), loss='mae')
 #print("lookback = ", lookback,'\t future={0:4d} minutes'.format(delay_))
-history = model.fit(samples_tr, targets_tr, batch_size=batch_size, epochs=10, 
+history = model.fit(samples_tr, targets_tr, batch_size=batch_size, epochs=20, 
                     validation_data=(samples_val, targets_val),verbose=1)
 
 
 maes = []
-for i in range(1,12):
-    print("step=", i)
+for i in range(1,31):
+    print("step=", i, "future = ", i*5)
     pred = model.predict(samples_val)
-    error = np.abs(targets_val - pred)
+    error = np.abs(np.reshape(targets_val,(-1,1)) - pred)
     mae = np.mean(error)
     print("mae:", mae)
     maes.append(mae)
     pred_reshape = pred.reshape(len(samples_val),1,1)
     samples_val = np.concatenate((samples_val[:,1:,:],pred_reshape),axis=1)
 
+#maes = maes[39:80]
 plt.plot(maes)
 
 
