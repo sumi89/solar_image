@@ -88,9 +88,38 @@ print("batch size = ", batch_size, "units = ", units, "kernel = ", kernel, "look
 model.fit(samples_tr, targets_tr, batch_size=batch_size, epochs=20, verbose=1)
 model.save('/Users/sumi/python/research/models/chain_conv1d_look24_future5_lr01_b512_u256_k23.h5')
 
+####### chain prediction with same lookback #########
+samples_val_chain = samples_val[:-25]
+mses = []
+#maes = []
+for i in range(1,25):
+    print("step=", i, "future = ", i*5)
+    #print('samples_val_chain:', samples_val_chain)
+    #print('samples_val_chain shape :', samples_val_chain.shape)
+    targets_val_chain = targets_val[i-1:i-1+len(samples_val_chain)]
+    #print("targets_val_chain:", targets_val_chain)
+    #print('targets_val_chain shape :', targets_val_chain.shape)
+    pred = model.predict(samples_val_chain)
+    #print('pred', pred)
+    target_val_reshape = np.reshape(targets_val_chain,(-1,1))
+    error = np.abs(target_val_reshape - pred)
+    #mae = np.mean(error)
+    #print("mae:", mae) 
+    #maes.append(mae)
+    squared_error = error * error
+    mse = np.mean(squared_error)
+    print("mse:", mse)
+    mses.append(mse)
+    pred_reshape = pred.reshape(len(samples_val_chain),1,1)
+    samples_val_chain = np.concatenate((samples_val_chain[:,1:,:],pred_reshape),axis=1)
+
+#plt.plot(mses)
+####### chain prediction with same lookback #########
+
+
+########## chain prediction with increasing lookback ##################
 samples_val_chain = samples_val[:-25]
 targets_val_chain = targets_val[:-25]
-
 mses = []
 for i in range(1,25):
     print("step=", i, "future = ", i*5)
@@ -117,35 +146,11 @@ for i in range(1,25):
     #targets_val_chain = np.append(target_val_reshape, targets[i-1+len(samples_val_chain)])
 
 #plt.plot(mses)
+########## chain prediction with increasing lookback ##################
 
 
 
 
-#samples_val_chain = samples_val[:-25]
-#mses = []
-##maes = []
-#for i in range(1,25):
-#    print("step=", i, "future = ", i*5)
-#    #print('samples_val_chain:', samples_val_chain)
-#    #print('samples_val_chain shape :', samples_val_chain.shape)
-#    targets_val_chain = targets_val[i-1:i-1+len(samples_val_chain)]
-#    #print("targets_val_chain:", targets_val_chain)
-#    #print('targets_val_chain shape :', targets_val_chain.shape)
-#    pred = model.predict(samples_val_chain)
-#    #print('pred', pred)
-#    target_val_reshape = np.reshape(targets_val_chain,(-1,1))
-#    error = np.abs(target_val_reshape - pred)
-#    #mae = np.mean(error)
-#    #print("mae:", mae) 
-#    #maes.append(mae)
-#    squared_error = error * error
-#    mse = np.mean(squared_error)
-#    print("mse:", mse)
-#    mses.append(mse)
-#    pred_reshape = pred.reshape(len(samples_val_chain),1,1)
-#    samples_val_chain = np.concatenate((samples_val_chain[:,1:,:],pred_reshape),axis=1)
-#
-##plt.plot(mses)
 
 
 
