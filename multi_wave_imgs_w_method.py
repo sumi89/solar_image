@@ -47,6 +47,7 @@ def get_urls_of_imgs_w_wavelength_resolution(date1, date2, wavelength, resolutio
     end_date = datetime.datetime.strptime(date2, '%Y-%m-%d %X')
     step = datetime.timedelta(days = 1)
     while start_date <= end_date:
+        print('date', start_date)
         #date = start_date.date()
         ##print (start_date.date())
         dt = start_date.date()
